@@ -17,4 +17,28 @@ function creatrWindow() {
     win.webContents.openDevTools()
 }
 
-app.whenReady().then(creatrWindow)
+// console.log(app.isReady());
+// app.whenReady().then(creatrWindow) //alternative
+app.on("ready", () => {
+    // console.log(app.isReady());
+    creatrWindow()
+    console.log("Your app is ready");
+})
+
+// app.on("before-quit", (e) => {
+//     console.log("Code before quit app");
+//     e.preventDefault()//prevent to exit window 
+// })
+
+// app.on("will-quit", () => {
+//     console.log("app will be quit");
+//     e.preventDefault()//prevent to exit window 
+// })
+
+// app.on("browser-window-focus", () => {
+//     console.log("This is focus event");
+// })
+
+// app.on("browser-window-blur", () => {
+//     console.log("This is blur");
+// })
