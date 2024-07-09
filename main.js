@@ -2,9 +2,9 @@ import { app, BrowserWindow } from "electron"
 
 function creatrWindow() {
     const win = new BrowserWindow({
-        width: 800,
+        width: true,
         height: 800,
-        // frame: false,//top heder
+        frame: false,//top heder
         // backgroundColor: "gray",
         // alwaysOnTop: true,
         // title:"Awsome app",
