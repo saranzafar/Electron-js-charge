@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electron file Name</title>
+    <style>
+        h1 {
+            color: red;
+        }
+    </style>
+    <script>
+        const { ipcRenderer } = require("electron")
+        function shareData() {
+            console.log("Working");
+            ipcRenderer.send("msg", "Hello from Render")
+            ipcRenderer.on("back-msg", (event, arg) => {
+                console.log("client:", arg);
+            })
+        }
+    </script>
+</head>
+
+<body style="user-select: none; -webkit-app-region: drag">
+    <h1>This is electron</h1>
+    <h2>Hello code step by step</h2>
+
+    <br>
+    <button onclick="shareData()">Share Data</button>
+</body>
+
+</html>
