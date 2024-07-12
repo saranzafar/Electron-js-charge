@@ -1,0 +1,26 @@
+{
+  "name": "todo",
+  "version": "1.0.0",
+  "productName": "Todo App",
+  "description": "This is todo desktop build with Electron js",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "nodemon --exec electron .",
+    "build": "electron-packager ."
+  },
+  "keywords": [
+    "electronjs",
+    "todo",
+    "electron-project"
+  ],
+  "author": "saran zafar",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^31.2.0"
+  },
+  "dependencies": {
+    "electron-packager": "^17.1.2",
+    "nodemon": "^3.1.4"
+  }
+}

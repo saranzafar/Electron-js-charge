@@ -1,44 +1,36 @@
-import { app, BrowserWindow } from "electron"
+const { app, BrowserWindow, Menu, ipcMain } = require('electron');
 
-function creatrWindow() {
+ipcMain.on("msg", (event, arg) => {
+    // console.log("event = ", event);
+    console.log("arg = ", arg);
+    event.reply("back-msg", "Thank you for data")
+})
+function createWindow() {
     const win = new BrowserWindow({
-        width: true,
-        height: 800,
-        frame: false,//top heder
-        // backgroundColor: "gray",
-        // alwaysOnTop: true,
-        // title:"Awsome app",
-        // resizable: false,
+        width: 900,
+        height: 600,
         webPreferences: {
-            nodeIntegration: true
+            nodeIntegration: true,
+            contextIsolation: false
         }
-    })
-    win.loadFile("index.html")
-    win.webContents.openDevTools()
+    });
+
+    win.loadFile('index.html');
 }
 
-// console.log(app.isReady());
-// app.whenReady().then(creatrWindow) //alternative
-app.on("ready", () => {
-    // console.log(app.isReady());
-    creatrWindow()
-    console.log("Your app is ready");
-})
+console.log("process = ", process.type);
+console.log("process = ", process.platform);
 
-// app.on("before-quit", (e) => {
-//     console.log("Code before quit app");
-//     e.preventDefault()//prevent to exit window 
-// })
+app.whenReady().then(createWindow);
 
-// app.on("will-quit", () => {
-//     console.log("app will be quit");
-//     e.preventDefault()//prevent to exit window 
-// })
+app.on('window-all-closed', () => {
+    if (process.platform !== 'darwin') {
+        app.quit();
+    }
+});
 
-// app.on("browser-window-focus", () => {
-//     console.log("This is focus event");
-// })
-
-// app.on("browser-window-blur", () => {
-//     console.log("This is blur");
-// })
+app.on('activate', () => {
+    if (win === null) {
+        createWindow();
+    }
+});

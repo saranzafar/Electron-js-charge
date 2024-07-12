@@ -8,19 +8,33 @@
     <style>
         h1 {
             color: red;
-
         }
     </style>
-</head>
+    <script>
+        const { ipcRenderer } = require("electron")
+        function shareData() {
+            console.log("Working");
+            ipcRenderer.send("msg", "Hello from Render")
+            ipcRenderer.on("back-msg", (event, arg) => {
+                console.log("client:", arg);
+            })
+        }
 
-<!-- <body style="user-select: none; -web-app-region:drag"> -->
+        // console.log("process = ", process.versions);
+        console.log("process = ", process.type);
+        setTimeout(() => {
+            console.log("____");
+        }, 500);
+    </script>
+</head>
 
 <body style="user-select: none; -webkit-app-region: drag">
     <h1>This is electron</h1>
-    <h2>Hellow code step by step</h2>
-    <h2>Hellow code step by step</h2>
-    <h2>Hellow code step by step</h2>
-    <input type="range" name="" id="" style="-webkit-app-region: no-drag">
+    <h2>Hello code step by step</h2>
+
+    <br>
+    <button onclick="shareData()">Share Data</button>
+    <button onclick="process.hang()">Hang me</button>
 </body>
 
 </html>
