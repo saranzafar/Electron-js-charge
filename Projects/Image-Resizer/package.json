@@ -1,0 +1,22 @@
+{
+  "name": "image-resizer",
+  "productName": "Image Resizer",
+  "version": "1.0.0",
+  "description": "app to resize image dimension",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "keywords": [
+    "Image Resizer",
+    "Resize-Image"
+  ],
+  "author": "saran zafar",
+  "license": "ISC",
+  "dependencies": {
+    "electron": "^31.2.0",
+    "electronmon": "^2.0.3",
+    "resize-img": "^2.0.0",
+    "toastify-js": "^1.12.0"
+  }
+}
