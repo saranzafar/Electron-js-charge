@@ -43,5 +43,5 @@ We are confident that you will find this project educational and valuable in enh
 
 ---
 
-For any queries or further information, feel free to reach out via the provided contact channels.
+If you have any questions or need more information, please reach out through the provided contact channels.
 
