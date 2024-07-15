@@ -5,13 +5,10 @@ const filename = document.querySelector('#filename');
 const heightInput = document.querySelector('#height');
 const widthInput = document.querySelector('#width');
 
-console.log("versions = ", Toastify.toast());
-
 function loadImage(e) {
     const file = e.target?.files[0]
 
     if (!isFileImage(file)) {
-        console.log("Please select an image");
         alertError("Please select an image")
         return
     }
@@ -25,7 +22,6 @@ function loadImage(e) {
 
     form.style.display = "block";
     filename.innerText = file.name;
-    console.log("Success");
     outputPath.innerText = path.join(os.homedir(), 'imageresizer')
 }
 

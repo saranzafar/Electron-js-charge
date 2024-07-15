@@ -1,125 +1,162 @@
-const path = require("path")
-const os = require("os")
-const fs = require("fs")
-const resizeImg = require("resize-img")
-const { app, BrowserWindow, Menu, ipcMain, shell } = require("electron")
+const path = require('path');
+const os = require('os');
+const fs = require('fs');
+const resizeImg = require('resize-img');
+const { app, BrowserWindow, Menu, ipcMain, shell } = require('electron');
 
-const isMac = process.platform === "darwin"//check mac
-const isDev = process.env.NODE_ENV !== "development"
+const isDev = process.env.NODE_ENV === 'production';
+const isMac = process.platform === 'darwin';
+
 let mainWindow;
-// Create the main window
+let aboutWindow;
+
+// Main Window
 function createMainWindow() {
     mainWindow = new BrowserWindow({
-        title: "Image Resizer",
         width: isDev ? 1000 : 500,
         height: 600,
+        icon: `${__dirname}/assets/icons/Icon_256x256.png`,
+        resizable: isDev,
         webPreferences: {
-            contextIsolation: true,
             nodeIntegration: true,
-            preload: path.join(__dirname, 'preload.js')
-        }
-    })
-    //open devtools if in dev mode
+            contextIsolation: true,
+            preload: path.join(__dirname, 'preload.js'),
+        },
+    });
+
+    // Show devtools automatically if in development
     if (isDev) {
-        mainWindow.webContents.openDevTools()
+        mainWindow.webContents.openDevTools();
     }
 
-    mainWindow.loadFile(path.join(__dirname, "./renderer/index.html"))
+    // mainWindow.loadURL(`file://${__dirname}/renderer/index.html`);
+    mainWindow.loadFile(path.join(__dirname, './renderer/index.html'));
 }
 
-// create above window 
+// About Window
 function createAboutWindow() {
-    const aboutWindow = new BrowserWindow({
-        title: "Image Resizer",
+    aboutWindow = new BrowserWindow({
         width: 300,
-        height: 300
-    })
-    aboutWindow.loadFile(path.join(__dirname, "./renderer/about.html"))
+        height: 300,
+        title: 'About Electron',
+        icon: `${__dirname}/assets/icons/Icon_256x256.png`,
+    });
+
+    aboutWindow.loadFile(path.join(__dirname, './renderer/about.html'));
 }
 
-// App is ready
-app.whenReady().then(() => {
-    createMainWindow()
+// When the app is ready, create the window
+app.on('ready', () => {
+    createMainWindow();
 
-    // Implemtnt menu
     const mainMenu = Menu.buildFromTemplate(menu);
-    Menu.setApplicationMenu(mainMenu)
+    Menu.setApplicationMenu(mainMenu);
 
-    // remove mainWindow from memory or close
-    mainMenu.on("close", () => (mainWindow = null))
-
-    app.on('activate', () => {
-        if (BrowserWindow.getAllWindows().length === 0) {
-            createMainWindow()
-        }
-    });
+    // Remove variable from memory
+    mainWindow.on('closed', () => (mainWindow = null));
 });
 
-//Menu templet
+// Menu template
 const menu = [
-    ...(isMac ? [{
-        label: app.name,
-        submenu: [
+    ...(isMac
+        ? [
             {
-                label: "About",
-                click: createAboutWindow
-            }
+                label: app.name,
+                submenu: [
+                    {
+                        label: 'About',
+                        click: createAboutWindow,
+                    },
+                ],
+            },
         ]
-    }] : []),
+        : []),
     {
-        role: "fileMenu"
+        role: 'fileMenu',
     },
-    ...(!isMac ? [
-        {
-            label: "Help",
-            submenu: [
-                {
-                    label: "About",
-                    click: createAboutWindow
-                }
-            ]
-        }
-    ] : [])
+    ...(!isMac
+        ? [
+            {
+                label: 'Help',
+                submenu: [
+                    {
+                        label: 'About',
+                        click: createAboutWindow,
+                    },
+                ],
+            },
+        ]
+        : []),
+    // {
+    //   label: 'File',
+    //   submenu: [
+    //     {
+    //       label: 'Quit',
+    //       click: () => app.quit(),
+    //       accelerator: 'CmdOrCtrl+W',
+    //     },
+    //   ],
+    // },
+    ...(isDev
+        ? [
+            {
+                label: 'Developer',
+                submenu: [
+                    { role: 'reload' },
+                    { role: 'forcereload' },
+                    { type: 'separator' },
+                    { role: 'toggledevtools' },
+                ],
+            },
+        ]
+        : []),
 ];
 
-// respond to ipcRenderer resize 
-ipcMain.on("image:resize", (event, options) => {
-    options.dest = path.join(os.homedir(), "imageresizer")
-    resizeImage(options)
-    console.log(options);
-})
+// Respond to the resize image event
+ipcMain.on('image:resize', (e, options) => {
+    // console.log(options);
+    options.dest = path.join(os.homedir(), 'imageresizer');
+    resizeImage(options);
+});
 
-async function resizeImage({ imagePath, width, height }) {
+// Resize and save image
+async function resizeImage({ imagePath, height, width, dest }) {
     try {
-        console.log("Resizing");
+        // console.log(imagePath, height, width, dest);
+
+        // Resize image
         const newPath = await resizeImg(fs.readFileSync(imagePath), {
             width: +width,
-            height: +height
+            height: +height,
         });
-        console.log("Resized", newPath);
 
-        //create file name
-        const filename = path.basename(imagePath)
+        // Get filename
+        const filename = path.basename(imagePath);
 
-        // create destination folder 
+        // Create destination folder if it doesn't exist
         if (!fs.existsSync(dest)) {
-            fs.mkdirSync(dest)
+            fs.mkdirSync(dest);
         }
 
-        //write file to destination
-        fs.writeFileSync(path.join(dest, filename), newPath)
+        // Write the file to the destination folder
+        fs.writeFileSync(path.join(dest, filename), newPath);
 
-        // send seccess message to render
-        mainMenu.webContents.send("image:done")
-        // open dest folder 
-        shell.openPath(dest)
-    } catch (error) {
+        // Send success to renderer
+        mainWindow.webContents.send('image:done');
 
+        // Open the folder in the file explorer
+        shell.openPath(dest);
+    } catch (err) {
+        console.log(err);
     }
 }
 
+// Quit when all windows are closed.
 app.on('window-all-closed', () => {
-    if (!isMac) {
-        app.quit()
-    }
-})
+    if (!isMac) app.quit();
+});
+
+// Open a window if none are open (macOS)
+app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) createMainWindow();
+});
