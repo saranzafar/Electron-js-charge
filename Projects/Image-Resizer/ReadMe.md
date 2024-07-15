@@ -30,12 +30,6 @@ npx electronmon .
 - [Node.js](https://nodejs.org/) (v12 or higher)
 - [npm](https://www.npmjs.com/)
 
-### Clone the Repository
-
-```bash
-git clone https://github.com/yourusername/image-resizer.git
-cd image-resizer
-```
 
 ### Acknowledgments
 - Electron.js
